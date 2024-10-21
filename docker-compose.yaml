@@ -6,12 +6,11 @@ services:
     networks:
       - app
     env_file:
-      - .env
+      - .env.local
     environment:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_DB: ${DATABASE_NAME}
-      PGUSER: postgres
     ports:
       - "5432:5432"
     volumes:
@@ -24,7 +23,20 @@ services:
       timeout: 5s
       retries: 5
 
-
+  app:
+    build: .
+    container_name: go-app
+    restart: always
+    networks:
+      - app
+    env_file:
+      - .env.local
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    command: ["go", "run", "cmd/app/main.go"]
+    
 volumes:
   postgres-db:
 
