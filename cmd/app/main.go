@@ -30,10 +30,12 @@ func main() {
 	// Initialize services
 	courseRepo := &repositories.CourseRepository{DB: db}
 	courseService := &services.CourseService{Repo: courseRepo}
+	personRepo := &repositories.PersonRepository{DB: db}
+	personService := &services.PersonService{Repo: personRepo}
 
 	// Initialize handlers
 	courseHandler := handlers.NewCourseHandler(courseService)
-	//personHandler := handlers.NewPersonHandler(personService)
+	personHandler := handlers.NewPersonHandler(personService)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -48,13 +50,20 @@ func main() {
 		/// Course routes
 		api.Route("/course", func(r chi.Router) {
 			r.Get("/", courseHandler.GetAllCourses)
+			r.Get("/{id}", courseHandler.GetCourse)
+			r.Put("/{id}", courseHandler.UpdateCourse)
+			r.Post("/", courseHandler.CreateCourse)
+			r.Delete("/{id}", courseHandler.DeleteCourse)
 		})
 
 		// Person routes
-		// api.Route("/person", func(r chi.Router) {
-		// 	r.Get("/", personHandler.GetAllPeople)
-		// 	// Add more person routes here
-		// })
+		api.Route("/person", func(r chi.Router) {
+			r.Get("/", personHandler.GetAllPeople)
+			r.Get("/{name}", personHandler.GetPerson)
+			r.Put("/{name}", personHandler.UpdatePerson)
+			r.Post("/", personHandler.CreatePerson)
+			r.Delete("/{name}", personHandler.DeletePerson)
+		})
 	})
 
 	http.ListenAndServe(":8000", r)
