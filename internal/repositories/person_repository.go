@@ -96,11 +96,11 @@ func (r *PersonRepository) GetCoursesForPerson(personID int) ([]int, error) {
 	return courses, nil
 }
 
-func (r *PersonRepository) DeletePerson(name string) (int, error) {
-	var personID int
-	if err := r.DB.QueryRow("DELETE FROM person WHERE first_name = $1 RETURNING id", name).Scan(&personID); err != nil {
-		return 0, err
+func (r *PersonRepository) DeletePerson(name string) error {
+	_, err := r.DB.Exec("DELETE FROM person WHERE first_name = $1", name)
+	if err != nil {
+		return err
 	}
 
-	return personID, nil
+	return nil
 }

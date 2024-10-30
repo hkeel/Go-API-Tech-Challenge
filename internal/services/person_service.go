@@ -46,11 +46,18 @@ func (s *PersonService) CreatePerson(person models.Person) (models.Person, error
 }
 
 func (s *PersonService) DeletePerson(name string) error {
-	personID, err := s.Repo.DeletePerson(name)
+	// Get the person ID
+	person, err := s.Repo.GetPeople(name, 0)
 	if err != nil {
 		return err
 	}
-	err = s.Repo.DeletePersonFromCourses(personID)
+	// DELETE the person from courses
+	err = s.Repo.DeletePersonFromCourses(person[0].ID)
+	if err != nil {
+		return err
+	}
+	// Then DELETE the person
+	err = s.Repo.DeletePerson(name)
 	if err != nil {
 		return err
 	}
